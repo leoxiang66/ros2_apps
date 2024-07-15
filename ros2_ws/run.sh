@@ -1,5 +1,9 @@
 #!/bin/bash
 echo "Start running ..."
+
+# Source the ROS 2 workspace
+source ./install/local_setup.bash
+
 # Function to list ROS 2 packages in the src directory
 list_packages() {
     local src_path="$1"
@@ -75,18 +79,21 @@ main() {
     echo "You selected package: $selected_package"
     echo "You selected node: $selected_node"
 
-    # Use subprocess to run ros2 run command
+    # Command to run the selected node
     command="ros2 run $selected_package $selected_node"
     echo
     echo "Running command: $command"
 
-    # Run the command and capture output
-    output=$($command 2>&1)
+    # Run the command directly
+    $command
 
-    # Display output
-    echo
-    echo "Command output:"
-    echo "$output"
+    # Check for errors
+    command_status=$?
+    if [ $command_status -ne 0 ]; then
+        echo
+        echo "Error: The command exited with status $command_status."
+        exit $command_status
+    fi
 }
 
 main
