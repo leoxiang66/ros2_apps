@@ -79,8 +79,8 @@ main() {
     echo "You selected package: $selected_package"
     echo "You selected node: $selected_node"
 
-    # Command to run the selected node
-    command="ros2 run $selected_package $selected_node"
+    # Command to run the selected node with extra parameters passed to the script
+    command="ros2 run $selected_package $selected_node $@"
     echo
     echo "Running command: $command"
 
@@ -96,7 +96,8 @@ main() {
     fi
 }
 
-main
+# Pass all script arguments to the main function
+main "$@"
 
 echo
 echo
