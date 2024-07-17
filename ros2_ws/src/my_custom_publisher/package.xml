@@ -1,7 +1,7 @@
 <package format="3">
   <name>my_custom_publisher</name>
   <version>0.0.0</version>
-  <description>Publisher for custom messages</description>
+  <description>Publisher and Subscriber for custom messages</description>
   <maintainer email="your_email@example.com">Your Name</maintainer>
   <license>Apache License 2.0</license>
 
