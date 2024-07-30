@@ -1,0 +1,1 @@
+g++ -I/usr/local/TensorRT/include -L/usr/local/TensorRT/lib -lnvinfer test_tensorrt.cpp -o test_tensorrt
