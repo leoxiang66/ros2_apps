@@ -1,1 +1,2 @@
-g++ -I/usr/local/TensorRT/include -L/usr/local/TensorRT/lib -lnvinfer test_tensorrt.cpp -o test_tensorrt
+g++ -I/usr/local/TensorRT/include -L/usr/local/TensorRT/lib -lnvinfer -lcudart test_tensorrt.cpp -o test_tensorrt
+nvcc -I/usr/local/TensorRT/include -I/usr/include/opencv4 -L/usr/local/TensorRT/lib -lnvinfer -lcudart -lopencv_core -lopencv_imgproc -lopencv_highgui -lopencv_dnn -lopencv_imgcodecs infer.cpp -o infer

@@ -1,0 +1,1 @@
+python main.py --model /home/xiang-tao/git/runs/detect/train/weights/best.onnx --img /home/xiang-tao/git/bus.jpg
