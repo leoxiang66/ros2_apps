@@ -16,7 +16,7 @@
   <buildtool_depend>ament_python</buildtool_depend>
 
   <depend>rclpy</depend>
-  <depend>rclpy_action</depend>
+<depend>action_msgs</depend>
   <depend>custom_action_interfaces</depend>
   <depend>rosidl_default_generators</depend>
 
