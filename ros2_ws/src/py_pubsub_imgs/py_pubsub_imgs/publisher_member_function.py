@@ -10,14 +10,14 @@ class ImagePublisher(Node):
         super().__init__('image_publisher')
         self.publisher_ = self.create_publisher(Image, 'camera_imgs', 10)
         self.bridge = CvBridge()
-        self.timer = self.create_timer(1.0, self.timer_callback)
+        self.timer = self.create_timer(0.05, self.timer_callback)
         self.count = 0
 
     def timer_callback(self):
-        if self.count < 10:
+        if self.count < 1000:
             
             # 打开PNG图像文件
-            pil_image = PILImage.open(f'/home/xiang-tao/git/ros2_apps/images/image_{self.count}.png')
+            pil_image = PILImage.open(f'/home/xiang-tao/images/image_{self.count}.png')
 
             # 将PIL图像转换为NumPy数组
             cv_image = np.array(pil_image)
