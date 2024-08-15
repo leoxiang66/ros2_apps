@@ -11,14 +11,19 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
-find_package(cv_bridge REQUIRED)  # Add this line
-find_package(OpenCV REQUIRED)     # Add this line
-# uncomment the following section in order to fill in
-# further dependencies manually.
-# find_package(<dependency> REQUIRED)
+find_package(cv_bridge REQUIRED) # Add this line
+find_package(OpenCV REQUIRED) # Add this line
+set(ad_interfaces_DIR ~/include/lib/cmake/ad_interfaces)
+find_package(ad_interfaces REQUIRED)
+find_package(OpenCV REQUIRED)
+
+include_directories(~/include/include)
+include_directories(${OpenCV_INCLUDE_DIRS})
 
 add_executable(talker src/publisher_lambda_function.cpp)
 ament_target_dependencies(talker rclcpp std_msgs)
+
+
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
@@ -36,12 +41,19 @@ install(TARGETS
   talker
   DESTINATION lib/${PROJECT_NAME})
 
-  add_executable(listener src/subscriber_lambda_function.cpp)
-  ament_target_dependencies(listener rclcpp std_msgs sensor_msgs cv_bridge OpenCV)  
-  
-  install(TARGETS
-    talker
-    listener
-    DESTINATION lib/${PROJECT_NAME})
+add_executable(listener src/subscriber_lambda_function.cpp)
+ament_target_dependencies(listener rclcpp std_msgs sensor_msgs cv_bridge OpenCV)
+
+target_link_libraries(listener ad_interfaces::perception ${OpenCV_LIBS})
+
+target_include_directories(listener PRIVATE
+  ~/include/include
+  ~/include/include/perception
+)
+
+install(TARGETS
+  talker
+  listener
+  DESTINATION lib/${PROJECT_NAME})
 
 ament_package()
