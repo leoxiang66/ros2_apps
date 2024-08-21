@@ -10,7 +10,7 @@ class ImagePublisher(Node):
         super().__init__('image_publisher')
         self.publisher_ = self.create_publisher(Image, 'camera_imgs', 10)
         self.bridge = CvBridge()
-        self.timer = self.create_timer(0.05, self.timer_callback)
+        self.timer = self.create_timer(1, self.timer_callback)
         self.count = 0
 
     def timer_callback(self):

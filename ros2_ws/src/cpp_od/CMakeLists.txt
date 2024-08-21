@@ -28,8 +28,7 @@ find_package(ad_interfaces REQUIRED)
 include_directories(~/include/include)
 include_directories(${OpenCV_INCLUDE_DIRS})
 
-add_executable(talker src/publisher_lambda_function.cpp)
-ament_target_dependencies(talker rclcpp std_msgs)
+
 
 
 
@@ -52,9 +51,7 @@ endif()
 add_definitions(-DTRT_10)
 
 
-install(TARGETS
-  talker
-  DESTINATION lib/${PROJECT_NAME})
+
 
 add_executable(listener src/subscriber_lambda_function.cpp)
 ament_target_dependencies(listener rclcpp std_msgs sensor_msgs cv_bridge OpenCV)
@@ -66,9 +63,18 @@ target_include_directories(listener PRIVATE
   ~/include/include/perception
 )
 
+add_executable(demo src/demo.cpp)
+ament_target_dependencies(demo rclcpp std_msgs sensor_msgs cv_bridge OpenCV)
+target_link_libraries(demo ad_interfaces::perception ${OpenCV_LIBS} yolov8)
+
+target_include_directories(demo PRIVATE
+  ~/include/include
+  ~/include/include/perception
+)
+
 install(TARGETS
-  talker
   listener
+  demo
   DESTINATION lib/${PROJECT_NAME})
 
 ament_package()
