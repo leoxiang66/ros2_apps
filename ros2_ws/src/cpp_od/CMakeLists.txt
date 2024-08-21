@@ -23,7 +23,7 @@ find_package(cv_bridge REQUIRED) # Add this line
 find_package(OpenCV REQUIRED) # Add this line
 set(ad_interfaces_DIR ~/include/lib/cmake/ad_interfaces)
 find_package(ad_interfaces REQUIRED)
-find_package(OpenCV REQUIRED)
+
 
 include_directories(~/include/include)
 include_directories(${OpenCV_INCLUDE_DIRS})
@@ -44,6 +44,13 @@ if(BUILD_TESTING)
   set(ament_cmake_cpplint_FOUND TRUE)
   ament_lint_auto_find_test_dependencies()
 endif()
+
+
+
+
+
+add_definitions(-DTRT_10)
+
 
 install(TARGETS
   talker

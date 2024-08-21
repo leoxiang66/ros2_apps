@@ -27,13 +27,14 @@ print_var(OpenCV_LIBRARIES)
 print_var(OpenCV_INCLUDE_DIRS)
 
 # TensorRT
-set(TensorRT_DIR /usr/local/TensorRT/)
-set(TensorRT_LIB_DIR ${TensorRT_DIR}/lib/)
+set(TensorRT_DIR /usr/local/TensorRT)
+set(TensorRT_LIB_DIR ${TensorRT_DIR}/lib)
 set(TensorRT_INCLUDE_DIR ${TensorRT_DIR}/include)
 set(TensorRT_LIBRARY ${TensorRT_LIB_DIR}/libnvinfer.so)
 set(TensorRT_PLUGIN_LIBRARY ${TensorRT_LIB_DIR}/libnvinfer_plugin.so)
 
 find_package(TensorRT REQUIRED)
+include_directories(${TensorRT_INCLUDE_DIR})
 set(TensorRT_LIBRARIES ${TensorRT_LIBRARY} ${TensorRT_PLUGIN_LIBRARY})
 print_var(TensorRT_LIBRARIES)
 print_var(TensorRT_INCLUDE_DIRS)
@@ -66,7 +67,7 @@ print_var(ALL_LIBS)
 print_var(ALL_LIB_DIRS)
 
 # Create a header-only library
-add_library(yolov8 INTERFACE)
+add_library(yolov8 INTERFACE include/common.hpp include/filesystem.hpp include/yolov8.hpp)
 
 target_include_directories(
     yolov8
