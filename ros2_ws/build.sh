@@ -1,4 +1,7 @@
 echo "Start building ..."
+echo "请确保python路径为正确的ros2 python"
+echo "which python:"
+which python
 
 
 rosdep install -i --from-path src --rosdistro humble -y
