@@ -6,6 +6,14 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
+# 添加 Project2 目录
+
+add_subdirectory(./yolov8 yolov8)
+
+# 包含 Project2 的头文件
+
+include_directories(./yolov8/include)
+
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
@@ -44,7 +52,7 @@ install(TARGETS
 add_executable(listener src/subscriber_lambda_function.cpp)
 ament_target_dependencies(listener rclcpp std_msgs sensor_msgs cv_bridge OpenCV)
 
-target_link_libraries(listener ad_interfaces::perception ${OpenCV_LIBS})
+target_link_libraries(listener ad_interfaces::perception ${OpenCV_LIBS} yolov8)
 
 target_include_directories(listener PRIVATE
   ~/include/include
