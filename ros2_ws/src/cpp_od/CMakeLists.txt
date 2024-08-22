@@ -14,6 +14,8 @@ add_subdirectory(./yolov8 yolov8)
 
 include_directories(./yolov8/include)
 
+include_directories(./include)
+
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)

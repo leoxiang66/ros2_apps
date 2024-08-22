@@ -9,7 +9,7 @@ git checkout v0.1.0-feasible
 git submodule update --init --recursive
 cd ros2_ws/src/cpp_od/AD-interfaces/ad-interfaces
 make install
-cd ${ROOT}
+cd ${ROOT}/ros2_ws
 ./build.sh
 
 # in current terminal
