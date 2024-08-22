@@ -9,22 +9,10 @@
 
 namespace fs = ghc::filesystem;
 
-const std::vector<std::string> CLASS_NAMES = {
-    "person", "bicycle", "car", "motorcycle", "airplane", "bus", "train",
-    "truck", "boat", "traffic light", "fire hydrant", "stop sign", "parking meter", "bench",
-    "bird", "cat", "dog", "horse", "sheep", "cow", "elephant",
-    "bear", "zebra", "giraffe", "backpack", "umbrella", "handbag", "tie",
-    "suitcase", "frisbee", "skis", "snowboard", "sports ball", "kite", "baseball bat",
-    "baseball glove", "skateboard", "surfboard", "tennis racket", "bottle", "wine glass", "cup",
-    "fork", "knife", "spoon", "bowl", "banana", "apple", "sandwich",
-    "orange", "broccoli", "carrot", "hot dog", "pizza", "donut", "cake",
-    "chair", "couch", "potted plant", "bed", "dining table", "toilet", "tv",
-    "laptop", "mouse", "remote", "keyboard", "cell phone", "microwave", "oven",
-    "toaster", "sink", "refrigerator", "book", "clock", "vase", "scissors",
-    "teddy bear", "hair drier", "toothbrush"};
 
 
-void print_objects(const cv::Mat& image, const std::vector<DetectedBox>& objs, const std::vector<std::string>& CLASS_NAMES)
+
+void print_objects(const std::vector<DetectedBox>& objs)
 {
     for (const auto& obj : objs) {
         // Extract bounding box coordinates
@@ -60,7 +48,7 @@ public:
           std::vector<cv::Mat> images = {image};
           auto detections = detector_->image_detection(images);
 
-          print_objects(image, detections[0], CLASS_NAMES);
+          print_objects(detections[0]);
 
        
           cv::waitKey(10); // Add a delay for the image to be displayed
