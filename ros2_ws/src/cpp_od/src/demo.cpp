@@ -40,20 +40,7 @@ const std::vector<std::vector<unsigned int>> COLORS = {
     {80, 183, 189},  {128, 128, 0}};
 
 
-void print_objects(const cv::Mat& image, const std::vector<Object>& objs, const std::vector<std::string>& CLASS_NAMES)
-{
-    for (const auto& obj : objs) {
-        // Extract bounding box coordinates
-        int x1 = static_cast<int>(obj.rect.x);
-        int y1 = static_cast<int>(obj.rect.y);
-        int x2 = x1 + static_cast<int>(obj.rect.width);
-        int y2 = y1 + static_cast<int>(obj.rect.height);
 
-        // Print class, confidence, and bounding box coordinates
-        printf("Class: %s, Confidence: %.2f%%, Box: [%d, %d, %d, %d]\n",
-               CLASS_NAMES[obj.label].c_str(), obj.prob * 100, x1, y1, x2, y2);
-    }
-}
 
 
 class ImageSubscriber : public rclcpp::Node
