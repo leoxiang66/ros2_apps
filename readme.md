@@ -5,7 +5,7 @@
 git clone https://github.com/leoxiang66/ros2_apps.git
 cd ros2_apps/
 ROOT=$(pwd)
-git checkout v0.1.0-feasible
+git checkout v0.2.0
 git submodule update --init --recursive
 cd ros2_ws/src/cpp_od/AD-interfaces/ad-interfaces
 make install
