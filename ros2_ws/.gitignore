@@ -2,6 +2,7 @@
 /build/
 /install/
 /log/
+*.jpg
 
 # ROS 2 workspace directories
 /dev_ws/build/
