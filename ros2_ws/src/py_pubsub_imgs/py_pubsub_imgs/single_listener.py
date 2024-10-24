@@ -5,6 +5,7 @@ from flir_camera_msgs.msg import ImageMetaData
 from cv_bridge import CvBridge
 import cv2
 import os
+from datetime import datetime, timedelta
 
 class ImageSubscriber(Node):
     def __init__(self):
@@ -32,7 +33,7 @@ class ImageSubscriber(Node):
         self.brightness = 0
         self.max_exposure_time = 0
         self.gain = 0.0
-        self.image_timestamp = None
+        self.image_timestamp_pc = None
         self.meta_timestamp = None
 
     def listener_callback(self, msg):
@@ -51,7 +52,7 @@ class ImageSubscriber(Node):
         cv2.imshow('Received Image', cv_color_image)
         cv2.waitKey(1)
 
-        self.image_timestamp = msg.header.stamp
+        self.image_timestamp_pc = self.convert_ros_timestamp_to_datetime(msg.header.stamp)
         self.print_metadata()
 
     def meta_callback(self, msg):
@@ -61,9 +62,13 @@ class ImageSubscriber(Node):
         self.gain = msg.gain
         self.meta_timestamp = msg.header.stamp
 
+    def convert_ros_timestamp_to_datetime(self, ros_timestamp):
+        return datetime.fromtimestamp(ros_timestamp.sec + ros_timestamp.nanosec / 1e9)
+
+
     def print_metadata(self):
-        self.get_logger().info(f"Image timestamp: {self.image_timestamp.sec}.{self.image_timestamp.nanosec}")
-        self.get_logger().info(f"Meta timestamp: {self.meta_timestamp.sec}.{self.meta_timestamp.nanosec}")
+        self.get_logger().info(f"PC timestamp: {self.image_timestamp_pc}")
+        self.get_logger().info(f"Meta timestamp: {self.meta_timestamp}")
         self.get_logger().info(f"Exposure time: {self.exposure_time:.2f} ms")
         self.get_logger().info(f"Brightness: {self.brightness}")
         self.get_logger().info(f"Max exposure time: {self.max_exposure_time} us")

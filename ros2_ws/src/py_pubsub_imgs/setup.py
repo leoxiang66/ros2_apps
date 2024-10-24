@@ -20,8 +20,9 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-                'talker = py_pubsub_imgs.publisher_member_function:main',
-                'listener = py_pubsub_imgs.subscriber_member_function:main',
+                'multi_listener = py_pubsub_imgs.multi_listener:main',
+                'multi_listener_sync = py_pubsub_imgs.multi_listener_sync:main',
+                'single_listener = py_pubsub_imgs.single_listener:main',
         ],
 },
 )
