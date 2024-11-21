@@ -4,7 +4,7 @@ from sensor_msgs.msg import PointCloud2, PointField
 from sensor_msgs_py import point_cloud2
 import os
 from datetime import datetime
-
+import matplotlib.pyplot as plt
 
 class LivoxPointCloudSubscriber(Node):
     def __init__(self):
@@ -18,6 +18,7 @@ class LivoxPointCloudSubscriber(Node):
         self.point_cloud_counter = 0
         self.output_dir = 'output_livox_point_clouds'
         os.makedirs(self.output_dir, exist_ok=True)
+        self.offsets = []
 
     def listener_callback(self, msg):
         print('\n\nReceived Livox point cloud')
@@ -32,38 +33,24 @@ class LivoxPointCloudSubscriber(Node):
             # 可以进行滤波、变换等操作
             pass
         
-        '''
-        # 保存点云数据到文件
-        output_path = os.path.join(self.output_dir, f'livox_point_cloud_{self.point_cloud_counter:04d}.pcd')
-        with open(output_path, 'w') as f:
-            # 写入PCD文件头
-            f.write('# .PCD v0.7 - Point Cloud Data file format\n')
-            f.write('VERSION 0.7\n')
-            f.write('FIELDS x y z intensity tag line timestamp\n')
-            f.write('SIZE 4 4 4 4 1 1 8\n')
-            f.write('TYPE F F F F U U F\n')
-            f.write('COUNT 1 1 1 1 1 1 1\n')
-            f.write(f'WIDTH {msg.width}\n')
-            f.write(f'HEIGHT {msg.height}\n')
-            f.write('VIEWPOINT 0 0 0 1 0 0 0\n')
-            f.write(f'POINTS {msg.width * msg.height}\n')
-            f.write('DATA ascii\n')
-            
-            # 写入点云数据
-            for point in points:
-                x, y, z, intensity, tag, line, timestamp = point
-                f.write(f'{x} {y} {z} {intensity} {tag} {line} {timestamp}\n')
-        '''       
-        
         self.point_cloud_counter += 1
         
         # 打印点云元数据
+        print(f"There are {len(points)} points in this PC2.")
         self.print_metadata(msg)
         
         self.get_logger().info("Information of the first point:")
         self.print_point_data(points[0])
         
-    def print_point_data(self,point):
+        offset = msg.header.stamp.nanosec // 1000 
+        offset = offset - 1000000 if offset > 500000 else offset
+        
+        self.offsets.append(offset)
+        
+        if len(self.offsets) == 100:
+            self.plot_offsets()
+        
+    def print_point_data(self, point):
         x, y, z, intensity, tag, line, timestamp = point
         timestamp_sec = timestamp * 1e-9  # 将纳秒级别的时间戳转换为秒级别
         timestamp_datetime = datetime.fromtimestamp(timestamp_sec)
@@ -73,7 +60,6 @@ class LivoxPointCloudSubscriber(Node):
         self.get_logger().info(f'line: {line}')
         self.get_logger().info(f'timestamp: {timestamp_datetime}')
         
-
     def print_metadata(self, msg):
         timestamp = self.convert_ros_timestamp_to_datetime(msg.header.stamp)
         self.get_logger().info(f"Timestamp: {timestamp}")
@@ -86,6 +72,26 @@ class LivoxPointCloudSubscriber(Node):
 
     def convert_ros_timestamp_to_datetime(self, ros_timestamp):
         return datetime.fromtimestamp(ros_timestamp.sec + ros_timestamp.nanosec / 1e9)
+    
+    def plot_offsets(self):
+        x = list(range(100))
+        y = self.offsets
+        
+        plt.figure(figsize=(20, 6))
+        plt.plot(x, y, linestyle='--', marker='o', color='b')
+        plt.xlabel('Index')
+        plt.ylabel('Offset (microseconds)')
+        plt.title('Offsets Line Plot')
+        plt.grid(True)
+        plt.tight_layout()
+        
+        # 将图片保存到文件
+        output_path = os.path.join(self.output_dir, f'offsets_line_plot_{self.point_cloud_counter:04d}.png')
+        plt.savefig(output_path)
+        
+        plt.close()  # 关闭图形窗口
+        
+        self.offsets = []  # 清空offsets列表,重新开始收集
 
 def main(args=None):
     rclpy.init(args=args)
