@@ -36,7 +36,7 @@ class LivoxPointCloudSubscriber(Node):
         self.point_cloud_counter += 1
         
         # 打印点云元数据
-        print(f"There are {len(points)} points in this PC2.")
+        # print(f"There are {len(points)} points in this PC2.")
         self.print_metadata(msg)
         
         self.get_logger().info("Information of the first point:")

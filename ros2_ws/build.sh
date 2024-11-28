@@ -4,7 +4,7 @@ echo "which python:"
 which python
 
 rosdep update
-rosdep install -i --from-path src --rosdistro humble -y
+rosdep install -i --from-path src --rosdistro foxy -y
 colcon build
 
 echo
