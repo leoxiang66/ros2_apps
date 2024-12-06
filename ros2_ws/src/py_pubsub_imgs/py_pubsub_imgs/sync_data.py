@@ -1,68 +1,119 @@
 import rclpy
 from rclpy.node import Node
-from sensor_msgs.msg import PointCloud2, PointField, Image
-from sensor_msgs_py import point_cloud2
-import os
-from datetime import datetime, timedelta
-from typing import List, Tuple
-import std_msgs.msg
+from sensor_msgs.msg import Image, PointCloud2
+from datetime import datetime, timezone, timedelta
+
+def nanosec2date(nanoseconds):
+    """
+    Convert a nanosecond timestamp to a human-readable date string.
+    
+    Args:
+        nanoseconds (int): Timestamp in nanoseconds since the Unix epoch.
+    
+    Returns:
+        str: Date as a string in ISO 8601 format (YYYY-MM-DD HH:MM:SS.ssssss).
+    """
+    # Convert nanoseconds to seconds
+    seconds = nanoseconds // 1_000_000_000
+    # Get the remaining nanoseconds as microseconds
+    microseconds = (nanoseconds % 1_000_000_000) // 1_000
+
+    # Create a datetime object from seconds and microseconds
+    dt = datetime.fromtimestamp(seconds, tz=timezone.utc) + timedelta(microseconds=microseconds)
+
+    # Return the formatted date string
+    return dt.strftime('%Y-%m-%d %H:%M:%S.%f')
 
 
-class LivoxPointCloudSubscriber(Node):
+
+# Define the capacity of the timestamp arrays
+CAPACITY = 80
+
+class TimestampSyncNode(Node):
     def __init__(self):
-        super().__init__('livox_point_cloud_subscriber')
-        self.create_subscription(
+        super().__init__('timestamp_sync_node')
+
+        # Arrays to store timestamps
+        self.image_timestamps = [0] * CAPACITY
+        self.pc2_timestamps = [0] * CAPACITY
+        self.image_index = 0
+        self.pc2_index = 0
+        self.printed = False 
+
+        # Subscribers
+        self.image_sub = self.create_subscription(
+            Image,
+            '/camera/image_raw',
+            self.image_callback,
+            10
+        )
+        self.pc2_sub = self.create_subscription(
             PointCloud2,
             '/livox/lidar',
-            self.listener_callback,
-            10)
+            self.pc2_callback,
+            10
+        )
 
+        print('TimestampSyncNode started.')
+
+    def image_callback(self, msg):
+        if self.printed:
+            return
+
+        # If both arrays are filled, calculate and print differences
+        if self.image_index == CAPACITY and self.pc2_index == CAPACITY:
+            sum_diff = 0
+            for i in range(CAPACITY):
+                print(f"image timestamp: {nanosec2date(self.image_timestamps[i])}")
+                print(f"pc2 timestamp: {nanosec2date(self.pc2_timestamps[i])}")
+                diff = abs(self.image_timestamps[i] - self.pc2_timestamps[i])
+                sum_diff += diff
+                print(f"diff[{i}]: {diff}")
+
+            average_diff = sum_diff / CAPACITY
+            print(f"Average timestamp difference: {average_diff} ns")
+            self.printed = True
+            return
+
+        elif self.image_index == CAPACITY:
+            return
+
+        # Get the timestamp in nanoseconds
+        timestamp_ns = msg.header.stamp.sec * 1_000_000_000 + msg.header.stamp.nanosec
+
+        # Save the timestamp in the array
+        self.image_timestamps[self.image_index] = timestamp_ns
+
+        # Increment the index
+        self.image_index += 1
+
+    def pc2_callback(self, msg):
+        if self.pc2_index == CAPACITY:
+            return
+
+        # Get the timestamp in nanoseconds
+        timestamp_ns = msg.header.stamp.sec * 1_000_000_000 + msg.header.stamp.nanosec
         
 
-    def find_and_package_synchronized_data(
-        self,
-        pointcloud_data_pool: List[PointCloud2], 
-        camera_image: Image, 
-        image_timestamp: timedelta
-        ) -> Tuple[PointCloud2, Image]:
-        """
-        This function finds the 10 closest points (before and after respectively) to `image_timestamp` in `pointcloud_data_pool`,
-        repackages the selected points into a new PointCloud2 message, and returns a tuple containing
-        the new PointCloud2 and the corresponding camera_image.
+        # Save the timestamp in the array
+        self.pc2_timestamps[self.pc2_index] = timestamp_ns
 
-        Args:
-            pointcloud_data_pool (list[PointCloud2]): A list of PointCloud2 messages representing the point cloud data pool.
-            camera_image (Image): The camera image message.
-            image_timestamp (timedelta): The timestamp of the camera image.
+        # Increment the index
+        self.pc2_index += 1
 
-        Returns:
-            tuple[PointCloud2, Image]: A tuple containing the repackaged PointCloud2 message and the corresponding camera_image.
-        """
-        pass
-    
-    def print_metadata(self, msg):
-        self.get_logger().info(f"PTP mode: {msg.header}")
-        print(dir(msg.header))
-        # print(msg.get_fields_and_field_types())
-
-
-    def listener_callback(self, msg):
-        timestamp = self.convert_ros_timestamp_to_datetime(msg.header.stamp)
-        self.get_logger().info(f"Timestamp: {timestamp}")
-        print('\n\nReceived Livox point cloud')
-        
-        
-   
-    def convert_ros_timestamp_to_datetime(self, ros_timestamp):
-        return datetime.fromtimestamp(ros_timestamp.sec + ros_timestamp.nanosec / 1e9)
-        
 
 def main(args=None):
     rclpy.init(args=args)
-    livox_point_cloud_subscriber = LivoxPointCloudSubscriber()
-    rclpy.spin(livox_point_cloud_subscriber)
-    livox_point_cloud_subscriber.destroy_node()
+    node = TimestampSyncNode()
+
+    try:
+        rclpy.spin(node)
+    except KeyboardInterrupt:
+        pass
+
+    node.destroy_node()
     rclpy.shutdown()
+
 
 if __name__ == '__main__':
     main()
