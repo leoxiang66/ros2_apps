@@ -25,6 +25,7 @@ setup(
                 'single_listener = py_pubsub_imgs.single_listener:main',
                 'single_lidar = py_pubsub_imgs.single_lidar:main',
                 'single_imu = py_pubsub_imgs.single_imu:main',
+                'sync_analysis = py_pubsub_imgs.sync_analysis:main',
                 'sync_data = py_pubsub_imgs.sync_data:main',
         ],
 },
