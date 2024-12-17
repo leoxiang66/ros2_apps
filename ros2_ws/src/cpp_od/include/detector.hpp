@@ -36,7 +36,8 @@ private:
 
 // 实现构造函数
 Detector::Detector() {
-    auto engine_file_path_ = "/home/xiang-tao/git/ros2_apps/ros2_ws/src/cpp_od/yolov8s.engine";
+    // auto engine_file_path_ = "/home/xiang-tao/git/ros2_apps/ros2_ws/src/cpp_od/yolov8s.engine";
+    auto engine_file_path_ = "/home/xiang-tao/git/ros2_apps/ros2_ws/src/cpp_od/yolov8s_quant.engine";
     yolov8_ = std::make_unique<YOLOv8>(engine_file_path_);
     yolov8_->make_pipe(true);
 }
